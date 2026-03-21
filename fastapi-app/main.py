@@ -17,7 +17,7 @@ JSON_FILE = "todo.json"
 @app.get("/")
 def read_index():
     return FileResponse("templates/index.html")
- 
+
 @app.get("/index.html")
 def read_index_html():
     return FileResponse("templates/index.html")
