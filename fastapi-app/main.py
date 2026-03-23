@@ -42,8 +42,19 @@ def read():
 def create(todolist : TodoItem):
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         todolists = json.load(f)
+
+    new_id = max([item["id"] for item in todolists], default=0) + 1
+
+    new_todo = {
+        "id": new_id,
+        "title": todolist.title,
+        "content": todolist.content,
+        "completed": todolist.completed
+    }
+
+    todolists.append(new_todo)
     
-    todolists.append(todolist.model_dump())
+    #todolists.append(todolist.model_dump())
 
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(todolists, f, ensure_ascii=False, indent=4)
