@@ -35,9 +35,9 @@
         }
 
         async function editTodo(id) {
-            const title = prompt('Enter new title:');
-            const content = prompt('Enter new content:');
-            const completed = confirm('Is this task completed?');
+            const title = prompt('Enter new title : ');
+            const content = prompt('Enter new content : ');
+            const completed = confirm('Is this task completed? ');
             const response = await fetch(`/todos/${id}`, {
                 method: 'PUT',
                 headers: {
