@@ -4,11 +4,11 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import pytest
 from fastapi.testclient import TestClient
-from main import app, save_todos, load_todos, TodoItem
+from main import app, 
+#  save_todos, load_todos,
 
 client = TestClient(app)
 
-@pytest.fixture(autouse=True)
 def setup_and_teardown():
     # 테스트 전 초기화
     save_todos([])
