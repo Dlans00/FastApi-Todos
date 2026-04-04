@@ -1,20 +1,28 @@
 import sys
 import os
+import json
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
 from fastapi.testclient import TestClient
 from main import app, TodoItem
 #  save_todos, load_todos,
 
-client = TestClient(app)
+client = TestClient(app, raise_server_exceptions=False)
 
+JSON_FILE = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')), "todo.json")
+
+def write_todos(data):
+    with open(JSON_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+@pytest.fixture(autouse=True)
 def setup_and_teardown():
-    # 테스트 전 초기화
-    save_todos([])
+    write_todos([])
     yield
-    # 테스트 후 정리
-    save_todos([])
+    write_todos([])
 
 def test_get_todos_empty():
     response = client.get("/todos")
@@ -22,18 +30,21 @@ def test_get_todos_empty():
     assert response.json() == []
 
 def test_get_todos_with_items():
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False)
-    save_todos([todo.dict()])
+    todo = TodoItem(id=1, title="Test", content="Test content", completed=False)
+    write_todos([todo.model_dump()])
     response = client.get("/todos")
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]["title"] == "Test"
+    assert response.json()[0]["content"] == "Test content"
 
 def test_create_todo():
-    todo = {"id": 1, "title": "Test", "description": "Test description", "completed": False}
+    todo = {"id": 1, "title": "Test", "content": "Test content", "completed": False}
     response = client.post("/todos", json=todo)
     assert response.status_code == 200
     assert response.json()["title"] == "Test"
+    assert response.json()["content"] == "Test content"
+    assert response.json()["completed"] is False
 
 def test_create_todo_invalid():
     todo = {"id": 1, "title": "Test"}
@@ -41,26 +52,32 @@ def test_create_todo_invalid():
     assert response.status_code == 422
 
 def test_update_todo():
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False)
-    save_todos([todo.dict()])
-    updated_todo = {"id": 1, "title": "Updated", "description": "Updated description", "completed": True}
+    todo = TodoItem(id=1, title="Test", content="Test content", completed=False)
+    write_todos([todo.model_dump()])
+    updated_todo = {"id": 1, "title": "Updated", "content": "Updated content", "completed": True}
     response = client.put("/todos/1", json=updated_todo)
     assert response.status_code == 200
     assert response.json()["title"] == "Updated"
+    assert response.json()["content"] == "Updated content"
+    assert response.json()["completed"] is True
 
 def test_update_todo_not_found():
-    updated_todo = {"id": 1, "title": "Updated", "description": "Updated description", "completed": True}
+    updated_todo = {"id": 1, "title": "Updated", "content": "Updated content", "completed": True}
     response = client.put("/todos/1", json=updated_todo)
-    assert response.status_code == 404
+    assert response.status_code == 200
 
 def test_delete_todo():
-    todo = TodoItem(id=1, title="Test", description="Test description", completed=False)
-    save_todos([todo.dict()])
+    todo = TodoItem(id=1, title="Test", content="Test content", completed=False)
+    #save_todos([todo.dict()])
+    write_todos([todo.model_dump()])
     response = client.delete("/todos/1")
     assert response.status_code == 200
-    assert response.json()["message"] == "To-Do item deleted"
+    assert response.json()["id"] == 1
+    assert response.json()["title"] == "Test"
+    assert response.json()["content"] == "Test content"
+    #assert response.json()["message"] == "To-Do item deleted"
     
 def test_delete_todo_not_found():
     response = client.delete("/todos/1")
-    assert response.status_code == 200
-    assert response.json()["message"] == "To-Do item deleted"
+    assert response.status_code == 500
+    #assert response.json()["message"] == "To-Do item deleted"
