@@ -67,16 +67,20 @@ def update(todo_id: int, todolist : TodoItem):
     
     try:
         #todolists[todo_id] = todolist.model_dump()
+        found = False
         for i, item in enumerate(todolists):
             if item["id"] == todo_id:
                 todolists[i] = todolist.model_dump()
+                found = True
+                break
+
+        if not found:
+            raise HTTPException(status_code=404, detail="List not found")
 
         with open(JSON_FILE, "w", encoding="utf-8") as f:
             json.dump(todolists, f, indent=4)
         return todolist
     
-    except IndexError:
-        raise HTTPException(status_code=404, detail="List not found")
 
 @app.delete("/todos/{todo_id}", response_model=dict)
 def delete(todo_id: int):
