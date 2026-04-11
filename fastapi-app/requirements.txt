@@ -4,3 +4,5 @@ pytest
 pytest-html
 httpx
 pytest-cov
+playwright
+pytest-playwright
