@@ -64,7 +64,8 @@ def test_update_todo():
 def test_update_todo_not_found():
     updated_todo = {"id": 1, "title": "Updated", "content": "Updated content", "completed": True}
     response = client.put("/todos/1", json=updated_todo)
-    assert response.status_code == 200
+    assert response.status_code == 404
+    assert response.json()["detail"] == "List not found"
 
 def test_delete_todo():
     todo = TodoItem(id=1, title="Test", content="Test content", completed=False)
@@ -79,5 +80,5 @@ def test_delete_todo():
     
 def test_delete_todo_not_found():
     response = client.delete("/todos/1")
-    assert response.status_code == 500
-    #assert response.json()["message"] == "To-Do item deleted"
+    assert response.status_code == 404
+    assert response.json()["detail"] == "List not found"

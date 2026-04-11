@@ -85,16 +85,17 @@ def update(todo_id: int, todolist : TodoItem):
 def delete(todo_id: int):
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         todolists = json.load(f)
-    
-    try:
-        #todolist = todolists.pop(todo_id)
-        for i, item in enumerate(todolists):
-            if item["id"] == todo_id:
-                deleted_item = todolists.pop(i)
-        
-        with open(JSON_FILE, "w", encoding="utf-8") as f:
-            json.dump(todolists, f, indent=4)
-        return deleted_item
-    
-    except IndexError:
+
+    deleted_item = None
+    for i, item in enumerate(todolists):
+        if item["id"] == todo_id:
+            deleted_item = todolists.pop(i)
+            break
+
+    if deleted_item is None:
         raise HTTPException(status_code=404, detail="List not found")
+
+    with open(JSON_FILE, "w", encoding="utf-8") as f:
+        json.dump(todolists, f, indent=4)
+
+    return deleted_item
