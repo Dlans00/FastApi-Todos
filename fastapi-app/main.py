@@ -54,18 +54,15 @@ def create(todolist : TodoItem):
 
     todolists.append(new_todo)
     
-    #todolists.append(todolist.model_dump())
-
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(todolists, f, ensure_ascii=False, indent=4)
     return todolist
 
-@app.put("/todos/{todo_id}", response_model=TodoItem)
+@app.put("/todos/{todo_id}", response_model=TodoItem, responses={404: {"description": "List not found"}})
 def update(todo_id: int, todolist : TodoItem):
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         todolists = json.load(f)
     
-    #todolists[todo_id] = todolist.model_dump()
     found = False
     for i, item in enumerate(todolists):
         if item["id"] == todo_id:
@@ -81,7 +78,7 @@ def update(todo_id: int, todolist : TodoItem):
     return todolist
     
 
-@app.delete("/todos/{todo_id}", response_model=dict)
+@app.delete("/todos/{todo_id}", response_model=dict, responses={404: {"description": "List not found"}})
 def delete(todo_id: int):
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         todolists = json.load(f)
