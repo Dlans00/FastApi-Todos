@@ -65,21 +65,20 @@ def update(todo_id: int, todolist : TodoItem):
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         todolists = json.load(f)
     
-    try:
-        #todolists[todo_id] = todolist.model_dump()
-        found = False
-        for i, item in enumerate(todolists):
-            if item["id"] == todo_id:
-                todolists[i] = todolist.model_dump()
-                found = True
-                break
+    #todolists[todo_id] = todolist.model_dump()
+    found = False
+    for i, item in enumerate(todolists):
+        if item["id"] == todo_id:
+            todolists[i] = todolist.model_dump()
+            found = True
+            break
 
-        if not found:
-            raise HTTPException(status_code=404, detail="List not found")
+    if not found:
+        raise HTTPException(status_code=404, detail="List not found")
 
-        with open(JSON_FILE, "w", encoding="utf-8") as f:
-            json.dump(todolists, f, indent=4)
-        return todolist
+    with open(JSON_FILE, "w", encoding="utf-8") as f:
+        json.dump(todolists, f, indent=4)
+    return todolist
     
 
 @app.delete("/todos/{todo_id}", response_model=dict)
