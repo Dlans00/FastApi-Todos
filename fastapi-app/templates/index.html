@@ -72,6 +72,9 @@
             });
             if (response.ok) {
                 fetchTodos();
+
+                document.getElementById('title').value = "";
+                document.getElementById('content').value = "";
             }
         });
 
