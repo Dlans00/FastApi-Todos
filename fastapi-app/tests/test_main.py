@@ -8,7 +8,6 @@ os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pytest
 from fastapi.testclient import TestClient
 from main import app, TodoItem
-#  save_todos, load_todos,
 
 client = TestClient(app, raise_server_exceptions=False)
 
@@ -69,15 +68,13 @@ def test_update_todo_not_found():
 
 def test_delete_todo():
     todo = TodoItem(id=1, title="Test", content="Test content", completed=False)
-    #save_todos([todo.dict()])
     write_todos([todo.model_dump()])
     response = client.delete("/todos/1")
     assert response.status_code == 200
     assert response.json()["id"] == 1
     assert response.json()["title"] == "Test"
     assert response.json()["content"] == "Test content"
-    #assert response.json()["message"] == "To-Do item deleted"
-    
+
 def test_delete_todo_not_found():
     response = client.delete("/todos/1")
     assert response.status_code == 404
