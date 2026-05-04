@@ -61,17 +61,17 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
+    privileged: true
     ports:
       - "8081:8080"
-    privileged: true                   
-    devices:                          
-      - /dev/kmsg:/dev/kmsg          
-    volumes:                           
-      - /:/rootfs:ro                    
-      - /var/run:/var/run:ro           
-      - /sys:/sys:ro                  
-      - /var/lib/docker/:/var/lib/docker:ro  
-      - /dev/disk/:/dev/disk:ro     
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    devices:
+      - /dev/kmsg
 
 volumes:
   sonarqube_conf:
