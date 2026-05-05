@@ -5,6 +5,7 @@ from typing import List, Dict
 import json
 import os
 from prometheus_fastapi_instrumentator import Instrumentator
+import subprocess  # 보안 이슈용
 
 
 app = FastAPI()
@@ -34,6 +35,8 @@ class TodoItem(BaseModel):
 
 todolists = []
 
+unused_variable = 123  # Code Smell: 사용되지 않는 변수
+
 #create read update delete
 
 @app.get("/todos", response_model=list[TodoItem])
@@ -57,6 +60,8 @@ def create(todolist : TodoItem):
     }
 
     todolists.append(new_todo)
+
+    print("Todo created")  # Rule 선택 고민: print 사용
     
     with open(JSON_FILE, "w", encoding="utf-8") as f:
         json.dump(todolists, f, ensure_ascii=False, indent=4)
@@ -100,3 +105,20 @@ def delete(todo_id: int):
         json.dump(todolists, f, indent=4)
 
     return deleted_item
+
+
+HARDCODED_PASSWORD = "1234"  # Security Hotspot
+
+def dangerous_function(user_input: str):
+    return subprocess.check_output(user_input, shell=True)  # 보안 취약점
+
+def get_title(todo):
+    return todo["title"]  # Bug: None 처리 없음
+
+def complex_function(x):
+    if x > 0:
+        if x > 10:
+            if x > 20:
+                if x > 30:
+                    return "big"  # 구조 복잡성
+    return "small"
