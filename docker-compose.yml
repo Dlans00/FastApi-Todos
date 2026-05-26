@@ -8,6 +8,10 @@ services:
     container_name: FastApi-app
     ports:
       - "5001:8000"
+    depends_on:
+      - loki
+    environment:
+      - LOKI_ENDPOINT=http://loki:3100/loki/api/v1/push
 
   sonarqube:
     image: sonarqube:community
@@ -22,8 +26,162 @@ services:
       - sonarqube_logs:/opt/sonarqube/logs
       - sonarqube_extensions:/opt/sonarqube/extensions
 
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"  
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "7070:9090"
+
+  jmeter:
+    build:
+      context: ./jmeter
+      dockerfile: Dockerfile
+    container_name: jmeter
+    volumes:
+      - ./jmeter:/jmeter
+    command:
+      - jmeter
+      - -n
+      - -t
+      - /jmeter/fastapi_test_plan.jmx
+      - -l
+      - /jmeter/results.jtl
+      - -JBASE_URL=http://fastapi-app:8000
+      - -Jjmeter.save.saveservice.output_format=csv
+      - -e
+      - -o
+      - /jmeter/report
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "7100:9100"
+
+
 volumes:
   sonarqube_conf:
   sonarqube_data:
   sonarqube_logs:
   sonarqube_extensions:
+```bash
+version: "3.7"
+
+services:
+  fastapi-app:
+    build:
+      context: ./fastapi-app      # Dockerfile이 위치한 디렉토리 경로
+      dockerfile: Dockerfile      # Dockerfile 이름 (생략 가능, 기본값은 'Dockerfile')
+    container_name: FastApi-app
+    ports:
+      - "5002:8000"
+    depends_on:                   # Loki 컨테이너가 먼저 실행되도록 설정
+      - loki
+    environment:                  # 로그를 보낼 Loki 엔드포인트 설정
+      - LOKI_ENDPOINT=http://loki:3100/loki/api/v1/push
+    networks:
+      - loadtest-net
+
+  loki:                           # 새로 추가된 Loki 서비스
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    networks:                     # FastAPI 앱과 통신하기 위해 같은 네트워크 할당
+      - loadtest-net
+
+  jmeter:
+    build:
+      context: ./jmeter
+      dockerfile: Dockerfile
+    container_name: jmeter
+    volumes:
+      - ./jmeter:/jmeter
+    command:
+      - jmeter
+      - -n
+      - -t
+      - /jmeter/fastapi_test_plan.jmx
+      - -l
+      - /jmeter/results.jtl
+      - -JBASE_URL=http://fastapi-app:8000
+      - -Jjmeter.save.saveservice.output_format=csv
+      - -e
+      - -o
+      - /jmeter/report
+    networks:
+      - loadtest-net
+
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_conf:/opt/sonarqube/conf
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    networks:
+      - loadtest-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "7070:9090"
+    networks:
+      - loadtest-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - loadtest-net
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "7100:9100"
+    networks:
+      - loadtest-net
+
+networks:
+  loadtest-net:
+    driver: bridge
+
+volumes:
+  sonarqube_conf:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+  grafana-data:
