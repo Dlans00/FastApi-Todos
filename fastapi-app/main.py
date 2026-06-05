@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Optional
 import json
 import os
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -31,6 +31,7 @@ class TodoItem(BaseModel):
     title : str
     content : str
     completed : bool
+    due_date : Optional[str] = None
 
 todolists = []
 
@@ -53,7 +54,8 @@ def create(todolist : TodoItem):
         "id": new_id,
         "title": todolist.title,
         "content": todolist.content,
-        "completed": todolist.completed
+        "completed": todolist.completed,
+        "due_date": todolist.due_date
     }
 
     todolists.append(new_todo)
