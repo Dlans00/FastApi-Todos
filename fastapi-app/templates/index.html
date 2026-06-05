@@ -1,80 +1,342 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin-bottom: 32px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* 입력 폼 */
+        .form-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            margin-bottom: 28px;
+        }
+
+        .form-card h2 {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .form-card input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-card input[type="text"]:focus {
+            border-color: #667eea;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-add:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
+        /* 목록 */
+        .list-header {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-left: 4px;
+            opacity: 0.9;
+        }
+
+        #todo-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .todo-item {
+            background: #fff;
+            border-radius: 14px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .todo-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+
+        .todo-item.completed .todo-title {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+        /* 완료 체크박스 스타일 */
+        .todo-check {
+            width: 22px;
+            height: 22px;
+            accent-color: #667eea;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .todo-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .todo-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .todo-content {
+            font-size: 0.85rem;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .todo-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        .badge-done {
+            background: #e8f5e9;
+            color: #43a047;
+        }
+
+        .badge-pending {
+            background: #fff3e0;
+            color: #fb8c00;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-edit {
+            padding: 7px 14px;
+            background: #e8eaff;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-edit:hover {
+            background: #d0d4ff;
+        }
+
+        .btn-delete {
+            padding: 7px 14px;
+            background: #fde8e8;
+            color: #e53935;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #fcc;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>To-Do List</h1>
-    <ul id="todo-list"></ul>
-    <form id="todo-form">
-        <input type="text" id="title" placeholder="Title" required>
-        <input type="text" id="content" placeholder="Content" required>
-        <button type="submit">Add To-Do</button>
-    </form>
+    <div class="container">
+        <h1>📝 To-Do List</h1>
+
+        <div class="form-card">
+            <h2>새 할 일 추가</h2>
+            <form id="todo-form">
+                <div class="input-row">
+                    <input type="text" id="title" placeholder="제목" required>
+                    <input type="text" id="content" placeholder="내용" required>
+                </div>
+                <button type="submit" class="btn-add">+ 추가하기</button>
+            </form>
+        </div>
+
+        <div class="list-header" id="list-header">할 일 목록</div>
+        <ul id="todo-list"></ul>
+    </div>
+
     <script>
         async function fetchTodos() {
             const response = await fetch('/todos');
             const todos = await response.json();
             const todoList = document.getElementById('todo-list');
+            const header = document.getElementById('list-header');
             todoList.innerHTML = '';
+
+            if (todos.length === 0) {
+                todoList.innerHTML = '<p class="empty-msg">등록된 할 일이 없습니다.</p>';
+                header.textContent = '할 일 목록';
+                return;
+            }
+
+            header.textContent = `할 일 목록 (${todos.length}개)`;
+
             todos.forEach(todo => {
                 const li = document.createElement('li');
-                li.textContent = `${todo.title}: ${todo.content} (Completed: ${todo.completed})`;
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.onclick = () => editTodo(todo.id);
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = () => deleteTodo(todo.id);
-                li.appendChild(editButton);
-                li.appendChild(deleteButton);
+                li.className = 'todo-item' + (todo.completed ? ' completed' : '');
+
+                li.innerHTML = `
+                    <input type="checkbox" class="todo-check" ${todo.completed ? 'checked' : ''} onchange="toggleComplete(${todo.id}, this.checked, '${escapeStr(todo.title)}', '${escapeStr(todo.content)}')">
+                    <div class="todo-text">
+                        <div class="todo-title">${escapeHtml(todo.title)}</div>
+                        <div class="todo-content">${escapeHtml(todo.content)}</div>
+                    </div>
+                    <span class="todo-badge ${todo.completed ? 'badge-done' : 'badge-pending'}">
+                        ${todo.completed ? '완료' : '진행중'}
+                    </span>
+                    <div class="todo-actions">
+                        <button class="btn-edit" onclick="editTodo(${todo.id})">수정</button>
+                        <button class="btn-delete" onclick="deleteTodo(${todo.id})">삭제</button>
+                    </div>
+                `;
                 todoList.appendChild(li);
             });
         }
 
-        async function editTodo(id) {
-            const title = prompt('Enter new title : ');
-            const content = prompt('Enter new content : ');
-            const completed = confirm('Is this task completed? ');
-            const response = await fetch(`/todos/${id}`, {
+        function escapeHtml(str) {
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function escapeStr(str) {
+            return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        }
+
+        async function toggleComplete(id, completed, title, content) {
+            await fetch(`/todos/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, title, content, completed })
             });
-            if (response.ok) {
-                fetchTodos();
-            }
+            fetchTodos();
+        }
+
+        async function editTodo(id) {
+            const title = prompt('새 제목을 입력하세요:');
+            if (title === null) return;
+            const content = prompt('새 내용을 입력하세요:');
+            if (content === null) return;
+            const completed = confirm('완료된 항목인가요?');
+            const response = await fetch(`/todos/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, title, content, completed })
+            });
+            if (response.ok) fetchTodos();
         }
 
         async function deleteTodo(id) {
-            const response = await fetch(`/todos/${id}`, {
-                method: 'DELETE'
-            });
-            if (response.ok) {
-                fetchTodos();
-            }
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            const response = await fetch(`/todos/${id}`, { method: 'DELETE' });
+            if (response.ok) fetchTodos();
         }
 
         document.getElementById('todo-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
             const response = await fetch('/todos', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: Date.now(), title, content, completed: false })
             });
             if (response.ok) {
                 fetchTodos();
-
-                document.getElementById('title').value = "";
-                document.getElementById('content').value = "";
+                document.getElementById('title').value = '';
+                document.getElementById('content').value = '';
             }
         });
 
