@@ -19,7 +19,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -48,7 +48,7 @@
       "pluginVersion": "10.0.0",
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT sum(\"count\") FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" != 'all' AND \"statut\" = 'ok' AND $timeFilter",
           "rawQuery": true,
           "refId": "A",
@@ -59,7 +59,7 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -89,7 +89,7 @@
       "pluginVersion": "10.0.0",
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT (sum(\"countError\") / (sum(\"count\") + sum(\"countError\"))) * 100 FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" != 'all' AND $timeFilter",
           "rawQuery": true,
           "refId": "A",
@@ -100,7 +100,7 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -130,7 +130,7 @@
       "pluginVersion": "10.0.0",
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT mean(\"avg\") FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" != 'all' AND \"statut\" = 'ok' AND $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -141,7 +141,7 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -169,7 +169,7 @@
       "pluginVersion": "10.0.0",
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT mean(\"meanAT\") FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" = 'all' AND $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -180,7 +180,7 @@
       "type": "stat"
     },
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -217,7 +217,7 @@
       },
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT mean(\"avg\") FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" != 'all' AND \"statut\" = 'ok' AND $timeFilter GROUP BY time($__interval), \"transaction\" fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -228,7 +228,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "fixed", "fixedColor": "blue" },
@@ -265,7 +265,7 @@
       },
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT mean(\"meanAT\") AS \"Active Threads\", mean(\"minAT\") AS \"Min Threads\", mean(\"maxAT\") AS \"Max Threads\" FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" = 'all' AND $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -276,7 +276,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "fixed", "fixedColor": "green" },
@@ -313,7 +313,7 @@
       },
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT mean(\"throughput\") AS \"Throughput\" FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" = 'all' AND $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -324,7 +324,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "fixed", "fixedColor": "red" },
@@ -361,7 +361,7 @@
       },
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT sum(\"countError\") FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" != 'all' AND $timeFilter GROUP BY time($__interval), \"transaction\" fill(0)",
           "rawQuery": true,
           "refId": "A",
@@ -372,7 +372,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+      "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -409,7 +409,7 @@
       },
       "targets": [
         {
-          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB-JMETER}" },
+          "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
           "query": "SELECT mean(\"pct90.0\") AS \"p90\", mean(\"pct95.0\") AS \"p95\", mean(\"pct99.0\") AS \"p99\" FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" != 'all' AND \"statut\" = 'ok' AND $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
