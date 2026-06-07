@@ -11,7 +11,49 @@ app = FastAPI()
 
 # Prometheus 메트릭스 엔드포인트 (/metrics)
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
+# 2. Loki 로그 핸들러 설정
+# getenv를 통해 Docker Compose에 설정된 LOKI_ENDPOINT를 가져옵니다.
+loki_url = getenv("LOKI_ENDPOINT", "http://loki:3100/loki/api/v1/push")
 
+loki_logs_handler = LokiQueueHandler(
+    Queue(-1),
+    url=loki_url,
+    tags={"application": "fastapi"},
+    version="1",
+)
+
+# 3. 커스텀 액세스 로거 설정
+custom_logger = logging.getLogger("custom.access")
+custom_logger.setLevel(logging.INFO)
+custom_logger.addHandler(loki_logs_handler)
+
+# --- 미들웨어 설정 (로그 수집의 핵심) ---
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """
+    모든 HTTP 요청을 가로채서 응답 시간과 상태 코드를 계산하고
+    그 결과를 Loki 핸들러가 연결된 로거로 전송합니다.
+    """
+    start_time = time.time()
+    
+    # 다음 프로세스(엔드포인트 함수) 실행
+    response = await call_next(request)
+    
+    # 응답 시간 계산
+    duration = time.time() - start_time
+
+    # 로그 메시지 포맷 구성 (IP - "METHOD PATH HTTP" STATUS DURATION)
+    log_message = (
+        f'{request.client.host} - "{request.method} {request.url.path} HTTP/1.1" '
+        f'{response.status_code} {duration:.3f}s'
+    )
+
+    # Loki로 로그 전송
+    custom_logger.info(log_message)
+
+    return response
+    
 JSON_FILE = "todo.json"
 
 #@app.get('/')
