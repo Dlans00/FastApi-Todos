@@ -314,7 +314,7 @@
       "targets": [
         {
           "datasource": { "type": "influxdb", "uid": "influxdb-jmeter" },
-          "query": "SELECT mean(\"throughput\") AS \"Throughput\" FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" = 'all' AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT mean(\"hit\") AS \"Throughput\" FROM \"jmeter\" WHERE \"application\" = 'fastapi-todos' AND \"transaction\" = 'all' AND $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series"
